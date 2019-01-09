@@ -201,16 +201,12 @@ def filter_args(http_parameters, allowed_attributes, model_schema, query_content
     for key, value in http_parameters.items():
         filter_params[key] = value
     filtered_keys = {}
-    print("params:", filter_params)
     for key, value in filter_params.items():
         if key in allowed_attributes:
             filtered_keys[key] = value
-    print("filtered:", filtered_keys)
     schema = model_schema(many=True, only=list(filtered_keys))
     data = schema.dump(query_content)
     for key, val in filtered_keys.items():
-        print(key)
-        print(value)
         for element in data:
             if value:
                 if element[key] == type(element[key])(value): # noqa
