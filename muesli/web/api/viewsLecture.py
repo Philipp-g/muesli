@@ -69,7 +69,7 @@ class Lecture(object):
                 print(value)
                 for lecture in data:
                     if value:
-                        if lecture[key] == int(value):
+                        if lecture[key] == type(lecture[key])(value):
                             return_data.append(lecture)
                     else:
                         if lecture[key]:
