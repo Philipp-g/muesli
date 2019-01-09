@@ -6,40 +6,8 @@ from sqlalchemy import inspect
 from sqlalchemy.orm import exc, joinedload, undefer
 from sqlalchemy.sql.expression import desc
 from marshmallow.exceptions import ValidationError
+from muesli.utils import filter_args
 
-def filter_args(http_parameters, allowed_attributes, model_schema, query_content):
-    """Docstring for filter_args.
-
-    :http_parameters: The http parameters of the request (self.request.params)
-    :allowed_attributes: A list of allowed attributes
-    :model_schema: the marshmallow schema you want to use
-    :query_content: the already queried database content
-    :returns: filtered data as JSON-array
-
-    """
-    filter_params = {}
-    return_data = []
-    for key, value in http_parameters.items():
-        filter_params[key] = value
-    filtered_keys = {}
-    print("params:", filter_params)
-    for key, value in filter_params.items():
-        if key in allowed_attributes:
-            filtered_keys[key] = value
-    print("filtered:", filtered_keys)
-    schema = model_schema(many=True, only=list(filtered_keys))
-    data = schema.dump(query_content)
-    for key, val in filtered_keys.items():
-        print(key)
-        print(value)
-        for element in data:
-            if value:
-                if element[key] == type(element[key])(value): # noqa
-                    return_data.append(element)
-            else:
-                if element[key]:
-                    return_data.append(element)
-    return return_data
 
 @resource(collection_path='/api/lectures',
           path='/api/lectures/{lecture_id}',
