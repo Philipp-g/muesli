@@ -7,6 +7,7 @@ from sqlalchemy.orm import exc, joinedload, undefer
 from sqlalchemy.sql.expression import desc
 from marshmallow.exceptions import ValidationError
 
+
 @resource(collection_path='/api/lectures',
           path='/api/lectures/{lecture_id}',
           factory=context.GeneralContext,
@@ -48,9 +49,35 @@ class Lecture(object):
             .filter(models.Lecture.is_visible == True) # noqa
             .all()
         )
+        filter_params = {}
+        return_data = []
+        for key, value in self.request.params.items():
+            filter_params[key] = value
+            # print("(" + key + ", " + value + ")")
         allowed_attr_lecture = ['id', 'name', 'lecturer', 'assistants', 'term']
-        schema = models.LectureSchema(many=True, only=allowed_attr_lecture)
-        return schema.dump(lectures)
+        if filter_params:
+            filtered_keys = {}
+            print("params:", filter_params)
+            for key,value in filter_params.items():
+                if key in allowed_attr_lecture:
+                    filtered_keys[key] = value
+            print("filtered:", filtered_keys)
+            schema = models.LectureSchema(many=True, only=list(filtered_keys))
+            data = schema.dump(lectures)
+            for key, val in filtered_keys.items():
+                print(key)
+                print(value)
+                for lecture in data:
+                    if value:
+                        if lecture[key] == int(value):
+                            return_data.append(lecture)
+                    else:
+                        if lecture[key]:
+                            return_data.append(lecture)
+        else:
+            schema = models.LectureSchema(many=True, only=allowed_attr_lecture)
+            return_data = schema.dump(lectures)
+        return return_data
 
     def get(self):
         """A greeting endpoint.
