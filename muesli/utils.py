@@ -206,10 +206,10 @@ def filter_args(http_parameters, allowed_attributes, model_schema, query_content
             filtered_keys[key] = value
     schema_full = model_schema(many=True, only=list(allowed_attributes))
     schema_filtered = model_schema(many=True, only=list(filtered_keys))
-    data = schema_full.dump(query_content)
+    data_full = schema_full.dump(query_content)
     data_filtered = schema_filtered.dump(query_content)
     for key, value in filtered_keys.items():
-        for filtered, full in zip(data, data_filtered):
+        for filtered, full in zip(data_full, data_filtered):
             if value:
                 if filtered[key] == type(filtered[key])(value): # noqa
                     return_data.append(filtered)
