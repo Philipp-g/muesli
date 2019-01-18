@@ -204,14 +204,16 @@ def filter_args(http_parameters, allowed_attributes, model_schema, query_content
     for key, value in filter_params.items():
         if key in allowed_attributes:
             filtered_keys[key] = value
-    schema = model_schema(many=True, only=list(filtered_keys))
-    data = schema.dump(query_content)
-    for key, val in filtered_keys.items():
-        for element in data:
+    schema_full = model_schema(many=True, only=list(allowed_attributes))
+    schema_filtered = model_schema(many=True, only=list(filtered_keys))
+    data = schema_full.dump(query_content)
+    data_filtered = schema_filtered.dump(query_content)
+    for key, value in filtered_keys.items():
+        for filtered, full in zip(data, data_filtered):
             if value:
-                if element[key] == type(element[key])(value): # noqa
-                    return_data.append(element)
+                if filtered[key] == type(filtered[key])(value): # noqa
+                    return_data.append(filtered)
             else:
-                if element[key]:
-                    return_data.append(element)
+                if full[key]:
+                    return_data.append(full)
     return return_data
