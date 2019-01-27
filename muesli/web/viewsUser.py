@@ -168,7 +168,6 @@ def edit(request):
         form.saveValues()
         request.db.commit()
         request.session.flash('Daten geändert', queue='messages')
-    # Philipp sagt das das nicht gefährlich ist ;)
     tokens = list_auth_keys(request)
     tokens = tokens.get("keys", "")
     return {'user': user,
