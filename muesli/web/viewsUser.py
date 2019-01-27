@@ -167,12 +167,21 @@ def edit(request):
         form.saveValues()
         request.db.commit()
         request.session.flash('Daten geändert', queue='messages')
+    tokens = request.db.query(models.BearerToken).filter_by(user_id=user_id).filter(models.BearerToken.revoked == False).all()
+    print(type(tokens))
+    # for token in tokens:
+    #     token.expires = token.expires.strftime("%d. %B %Y, %H:%M Uhr")
+    #     if not token.description:
+    #         token.description = "Keine Beschreibung"
+    if not tokens:
+        tokens = ""
     return {'user': user,
             'form': form,
             'time_preferences': user.prepareTimePreferences(),
             'lectures_as_assistant': user.lectures_as_assistant.all(),
             'tutorials_as_tutor': user.tutorials_as_tutor.all(),
-            'penalty_names': utils.penalty_names}
+            'penalty_names': utils.penalty_names,
+            'keys': tokens}
 
 
 @view_config(route_name='user_delete', context=context.UserContext, permission='delete')
