@@ -12,35 +12,5 @@
   zu korrigieren, <a tal:attributes="href 'mailto:'+request.config['contact']['email']">schreiben Sie
   uns bitte eine Mail</a>.
 </p>
-
-    <h2 tal:condition="request.userInfo.is_admin()">API Keys</h2>
-    <table tal:condition="request.userInfo.is_admin()" class="colored">
-    <thead>
-      <tr>
-        <th> API Key Identifier </th>
-        <th> Ablaufdatum </th>
-        <th> Beschreibung </th>
-        <th> Entfernen </th>
-      </tr>
-    <tbody>
-      <tr tal:condition="code" tal:repeat="codes code">
-        <td style="font-family:monospace;font-size:1.1em;">
-            ${codes.id}
-        </td>
-        <td>
-            ${codes.expires}
-        </td>
-        <td>
-            ${codes.description}
-        </td>
-        <td>
-          <form method="post" tal:attributes="action request.route_path('remove_api_key',key_id=codes.id)">
-            <input type="submit" value="Entfernen"/>
-          </form>
-        </td>
-      </tr>
-    </tbody>
-    </thead>
-    </table>
   </metal:main>
 </metal:main>
