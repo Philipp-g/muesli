@@ -167,14 +167,9 @@ def edit(request):
         form.saveValues()
         request.db.commit()
         request.session.flash('Daten geändert', queue='messages')
-    tokens = request.db.query(models.BearerToken).filter_by(user_id=user_id).filter(models.BearerToken.revoked == False).all()
-    print(type(tokens))
-    # for token in tokens:
-    #     token.expires = token.expires.strftime("%d. %B %Y, %H:%M Uhr")
-    #     if not token.description:
-    #         token.description = "Keine Beschreibung"
-    if not tokens:
-        tokens = ""
+    else:
+        tokens = list_auth_keys(request)
+        tokens = tokens.get("keys","")
     return {'user': user,
             'form': form,
             'time_preferences': user.prepareTimePreferences(),
@@ -541,14 +536,8 @@ def list_auth_keys(request):
         request.session.flash("Ihr API Token wurde erstellt!", queue='messages')
         request.db.commit()
     tokens = (request.db.query(models.BearerToken)
-                 .filter_by(user_id=request.user.id).filter(models.BearerToken.revoked == False).all())
-    for token in tokens:
-        token.expires = token.expires.strftime("%d. %B %Y, %H:%M Uhr")
-        if not token.description:
-            token.description = "Keine Beschreibung"
-    if not tokens:
-        tokens = ""
-    return {'code': tokens,
+              .filter_by(user_id=request.user.id).filter(models.BearerToken.revoked == False).all())
+    return {'keys': tokens,
             'form': form,
             'freshtoken': jwt_token}
 

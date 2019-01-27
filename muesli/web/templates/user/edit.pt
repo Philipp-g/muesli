@@ -65,7 +65,7 @@
     <table tal:condition="len(keys) is not 0" class="colored">
     <thead>
       <tr>
-        <th> API Key Identifier </th>
+        <th> ID </th>
         <th> Ablaufdatum </th>
         <th> Beschreibung </th>
         <th> Entfernen </th>
@@ -76,9 +76,14 @@
             ${key.id}
         </td>
         <td>
-            ${key.expires}
+            ${key.expires.strftime("%d. %B %Y, %H:%M Uhr")}
         </td>
-        <td>
+
+        <td tal:define="italic 'font-style: italic !important;;font-size: 0.9em;;'" tal:attributes="style italic" tal:condition="not key.description">
+            Keine Beschreibung
+        </td>
+
+        <td tal:condition="key.description">
             ${key.description}
         </td>
         <td>
