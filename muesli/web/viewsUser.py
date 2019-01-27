@@ -157,6 +157,7 @@ def edit(request):
     user = request.db.query(models.User).get(user_id)
     lectures = user.lectures_as_assistant.all()
     form = forms.UserEdit(request, user)
+    tokens = ""
     if request.method == 'POST' and form.processPostData(request.POST):
         if (form['is_assistant'] != user.is_assistant) and (form['is_assistant'] == 0):
             lectures = user.lectures_as_assistant.all()
@@ -520,6 +521,10 @@ def resetPassword3(request):
 def list_auth_keys(request):
     form = forms.SetAuthCodeDescription(request)
     jwt_token = ""
+    if request.matchdict.get('user_id', ""):
+        user_id = request.matchdict.get('user_id', "")
+    else:
+        user_id = request.user.id
     if request.method == 'POST' and form.processPostData(request.POST):
         exp = datetime.timedelta(days=muesli.config["api"]["key_expiration"])
         token = models.BearerToken(client="Personal Token",
@@ -536,7 +541,7 @@ def list_auth_keys(request):
         request.session.flash("Ihr API Token wurde erstellt!", queue='messages')
         request.db.commit()
     tokens = (request.db.query(models.BearerToken)
-              .filter_by(user_id=request.user.id).filter(models.BearerToken.revoked == False).all())
+              .filter_by(user_id=user_id).filter(models.BearerToken.revoked == False).all())
     return {'keys': tokens,
             'form': form,
             'freshtoken': jwt_token}
